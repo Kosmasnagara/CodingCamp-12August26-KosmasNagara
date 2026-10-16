@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Life Dashboard</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="top-bar">
+    <div class="top-bar__left">
+      <span class="app-logo">✦ Dashboard</span>
+    </div>
+    <div class="top-bar__right">
+      <button id="themeToggle" class="icon-btn" title="Toggle theme" aria-label="Toggle light/dark mode">
+        <span class="theme-icon">🌙</span>
+      </button>
+      <button id="settingsBtn" class="icon-btn" title="Settings" aria-label="Open settings">⚙️</button>
+    </div>
+  </header>
+
+  <!-- ===== MAIN LAYOUT ===== -->
+  <main class="dashboard">
+
+    <!-- === GREETING & CLOCK === -->
+    <section class="card greeting-card" aria-label="Greeting and clock">
+      <div class="greeting-card__clock">
+        <div id="clock" class="clock-display">00:00:00</div>
+        <div id="dateDisplay" class="date-display"></div>
+      </div>
+      <div class="greeting-card__text">
+        <h1 id="greetingText" class="greeting-heading">Good morning!</h1>
+        <p id="greetingName" class="greeting-name">Welcome back, <span id="userName">Friend</span> 👋</p>
+      </div>
+    </section>
+
+    <!-- === MIDDLE ROW: TIMER + TODO === -->
+    <div class="mid-row">
+
+      <!-- === FOCUS TIMER === -->
+      <section class="card timer-card" aria-label="Focus timer">
+        <h2 class="card-title">🍅 Focus Timer</h2>
+        <div class="timer-display-wrap">
+          <svg class="timer-ring" viewBox="0 0 120 120" aria-hidden="true">
+            <circle class="timer-ring__bg" cx="60" cy="60" r="52" />
+            <circle id="timerProgress" class="timer-ring__progress" cx="60" cy="60" r="52" />
+          </svg>
+          <div id="timerDisplay" class="timer-countdown">25:00</div>
+        </div>
+        <div id="timerLabel" class="timer-label">Focus Session</div>
+        <div class="timer-controls">
+          <button id="timerStart" class="btn btn--primary">▶ Start</button>
+          <button id="timerPause" class="btn btn--secondary" disabled>⏸ Pause</button>
+          <button id="timerReset" class="btn btn--ghost">↺ Reset</button>
+        </div>
+        <div class="timer-settings-row">
+          <label class="timer-settings-label">
+            <span>Work</span>
+            <input id="workMinutes" type="number" min="1" max="60" value="25" class="time-input" aria-label="Work minutes" />
+            <span>min</span>
+          </label>
+          <label class="timer-settings-label">
+            <span>Break</span>
+            <input id="breakMinutes" type="number" min="1" max="30" value="5" class="time-input" aria-label="Break minutes" />
+            <span>min</span>
+          </label>
+        </div>
+        <div class="timer-session-info">
+          Session <span id="sessionCount">1</span> &bull; <span id="sessionType">Work</span>
+        </div>
+      </section>
+
+      <!-- === TO-DO LIST === -->
+      <section class="card todo-card" aria-label="To-do list">
+        <h2 class="card-title">📝 To-Do List</h2>
+
+        <!-- Add task -->
+        <form id="todoForm" class="todo-form" autocomplete="off">
+          <input
+            id="todoInput"
+            type="text"
+            class="todo-input"
+            placeholder="Add a new task…"
+            maxlength="120"
+            aria-label="New task"
+          />
+          <button type="submit" class="btn btn--primary" aria-label="Add task">＋</button>
+        </form>
+
+        <!-- Filter tabs -->
+        <div class="todo-filters" role="tablist" aria-label="Filter tasks">
+          <button class="filter-btn active" data-filter="all" role="tab" aria-selected="true">All</button>
+          <button class="filter-btn" data-filter="active" role="tab" aria-selected="false">Active</button>
+          <button class="filter-btn" data-filter="done" role="tab" aria-selected="false">Done</button>
+        </div>
+
+        <!-- Task list -->
+        <ul id="todoList" class="todo-list" aria-live="polite" aria-label="Tasks"></ul>
+
+        <!-- Footer -->
+        <div class="todo-footer">
+          <span id="taskCount" class="task-count">0 tasks left</span>
+          <button id="clearDone" class="btn btn--ghost btn--sm">Clear done</button>
+        </div>
+      </section>
+    </div><!-- end .mid-row -->
+
+    <!-- === QUICK LINKS === -->
+    <section class="card links-card" aria-label="Quick links">
+      <div class="links-header">
+        <h2 class="card-title">🔗 Quick Links</h2>
+        <button id="addLinkBtn" class="btn btn--primary btn--sm">＋ Add Link</button>
+      </div>
+      <ul id="linksList" class="links-list" aria-label="Saved links"></ul>
+      <p id="linksEmpty" class="empty-msg">No links yet. Add your favourites!</p>
+    </section>
+
+  </main>
+
+  <!-- ===== MODALS ===== -->
+
+  <!-- Settings modal -->
+  <div id="settingsModal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Settings" hidden>
+    <div class="modal">
+      <div class="modal__header">
+        <h2 class="modal__title">⚙️ Settings</h2>
+        <button class="modal__close" data-close="settingsModal" aria-label="Close settings">✕</button>
+      </div>
+      <div class="modal__body">
+        <label class="form-label">
+          Your Name
+          <input id="nameInput" type="text" class="form-control" placeholder="Enter your name" maxlength="32" />
+        </label>
+      </div>
+      <div class="modal__footer">
+        <button id="saveName" class="btn btn--primary">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add / Edit link modal -->
+  <div id="linkModal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Add link" hidden>
+    <div class="modal">
+      <div class="modal__header">
+        <h2 id="linkModalTitle" class="modal__title">＋ Add Link</h2>
+        <button class="modal__close" data-close="linkModal" aria-label="Close">✕</button>
+      </div>
+      <div class="modal__body">
+        <label class="form-label">
+          Label
+          <input id="linkLabel" type="text" class="form-control" placeholder="e.g. GitHub" maxlength="32" />
+        </label>
+        <label class="form-label">
+          URL
+          <input id="linkUrl" type="url" class="form-control" placeholder="https://example.com" />
+        </label>
+        <label class="form-label">
+          Emoji / Icon
+          <input id="linkEmoji" type="text" class="form-control emoji-input" placeholder="🌐" maxlength="4" />
+        </label>
+      </div>
+      <div class="modal__footer">
+        <button id="saveLinkBtn" class="btn btn--primary">Save Link</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit task modal -->
+  <div id="editTaskModal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Edit task" hidden>
+    <div class="modal">
+      <div class="modal__header">
+        <h2 class="modal__title">✏️ Edit Task</h2>
+        <button class="modal__close" data-close="editTaskModal" aria-label="Close">✕</button>
+      </div>
+      <div class="modal__body">
+        <label class="form-label">
+          Task
+          <input id="editTaskInput" type="text" class="form-control" maxlength="120" />
+        </label>
+      </div>
+      <div class="modal__footer">
+        <button id="saveEditTask" class="btn btn--primary">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
